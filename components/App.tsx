@@ -10,8 +10,9 @@ import { ReportDashboard } from './ReportDashboard';
 import { ProfessionalInsightsAgent } from './ProfessionalInsightsAgent';
 import { AuthScreen } from './AuthScreen';
 import {
-  Search, MapPin, Home, Mail, ArrowRight, CheckCircle2, Globe,
-  MessageCircle, Briefcase, LogOut, Loader2, Sparkles, AlertCircle
+  Search, Home, Mail, ArrowRight, CheckCircle2, Globe,
+  MessageCircle, Briefcase, LogOut, Loader2, Sparkles,
+  AlertCircle, ShieldCheck, Info
 } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -26,13 +27,11 @@ const App: React.FC = () => {
   const [subscribed, setSubscribed] = useState(false);
   const [isComparing, setIsComparing] = useState(false);
   const [showProfessionalAgent, setShowProfessionalAgent] = useState(false);
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user && user.emailVerified) {
-        setCurrentUser(user);
-      } else if (user && user.providerData?.some((p) => p.providerId === 'google.com')) {
-        // Google OAuth users are auto-verified
         setCurrentUser(user);
       } else {
         setCurrentUser(null);
@@ -100,7 +99,7 @@ const App: React.FC = () => {
   ];
 
   const whatsappNumber = '447724601320';
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=Hi NestCheck UK, I have a question about my property report.`;
+  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=Hi Home Notes, I have a question about my property report.`;
 
   if (authChecking) {
     return (
@@ -115,34 +114,41 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col text-slate-900 animate-in fade-in duration-500">
+    <div className="min-h-screen flex flex-col text-slate-900">
+
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
+      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 cursor-pointer group" onClick={handleReset}>
             <div className="bg-blue-600 p-1.5 rounded-lg group-hover:scale-110 transition-transform">
               <Home className="text-white" size={20} />
             </div>
             <span className="text-xl font-black text-slate-900 tracking-tight">
-              NestCheck<span className="text-blue-600">UK</span>
+              Home<span className="text-blue-600">Notes</span>
             </span>
           </div>
-          <nav className="flex items-center gap-4 md:gap-6">
+          <nav className="flex items-center gap-3 md:gap-5">
+            <button
+              onClick={() => setShowDisclaimer(true)}
+              className="hidden sm:flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors"
+            >
+              <Info size={15} /> Disclaimer
+            </button>
             <a href={whatsappUrl} target="_blank" rel="noopener noreferrer"
-               className="hidden sm:flex items-center gap-2 text-sm font-bold text-emerald-600 hover:text-emerald-700">
-              <MessageCircle size={18} /> Support
+               className="hidden sm:flex items-center gap-1.5 text-sm font-bold text-emerald-600 hover:text-emerald-700">
+              <MessageCircle size={17} /> Support
             </a>
             <button
               onClick={() => setShowProfessionalAgent(true)}
               className="hidden sm:flex items-center gap-2 text-sm font-bold text-blue-600 hover:text-blue-700 bg-blue-50 px-4 py-2 rounded-full transition-all hover:bg-blue-100"
             >
-              <Briefcase size={16} /> Professional
+              <Briefcase size={15} /> Professional
             </button>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-red-600 transition-colors"
+              className="flex items-center gap-1.5 text-sm font-bold text-slate-400 hover:text-red-600 transition-colors"
             >
-              <LogOut size={18} />
+              <LogOut size={17} />
               <span className="hidden sm:inline">Sign Out</span>
             </button>
           </nav>
@@ -151,27 +157,36 @@ const App: React.FC = () => {
 
       {/* Main */}
       <main className="flex-grow">
+
+        {/* ── IDLE / HOME ─────────────────────────────────── */}
         {status === AppState.IDLE && (
-          <div className="relative overflow-hidden">
+          <div className="relative overflow-hidden bg-gradient-to-b from-white via-slate-50 to-white">
+
             {/* Decorative blobs */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full -z-10">
-              <div className="absolute top-20 left-0 w-72 h-72 bg-blue-400/10 blur-3xl rounded-full" />
-              <div className="absolute bottom-20 right-0 w-96 h-96 bg-indigo-400/10 blur-3xl rounded-full" />
+            <div className="pointer-events-none absolute inset-0 overflow-hidden -z-10">
+              <div className="absolute -top-24 -left-24 w-96 h-96 bg-blue-200/30 blur-3xl rounded-full" />
+              <div className="absolute top-40 right-0 w-80 h-80 bg-indigo-200/20 blur-3xl rounded-full" />
+              <div className="absolute bottom-0 left-1/3 w-72 h-72 bg-sky-200/20 blur-3xl rounded-full" />
             </div>
 
-            <div className="max-w-4xl mx-auto px-4 pt-16 pb-20 text-center">
-              {/* Welcome badge */}
-              <div className="inline-flex items-center gap-2 bg-white border border-slate-200 px-4 py-1.5 rounded-full text-xs font-bold text-slate-500 mb-8 shadow-sm">
+            <div className="max-w-4xl mx-auto px-4 pt-14 pb-20 text-center">
+
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2 bg-white border border-slate-200 shadow-sm px-4 py-1.5 rounded-full text-xs font-bold text-slate-500 mb-10 tracking-widest uppercase">
                 <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-                WELCOME BACK, {currentUser.email?.split('@')[0].toUpperCase()}
+                AI Powered UK Property Area Intelligence
               </div>
 
-              {/* Intro box */}
-              <div className="mb-12 p-8 md:p-10 bg-gradient-to-br from-white to-blue-50/30 border border-blue-100 rounded-[2.5rem] shadow-2xl shadow-blue-900/5 text-center relative overflow-hidden animate-in slide-in-from-bottom-6 duration-700">
-                <div className="absolute top-0 right-0 p-6 opacity-10">
-                  <Sparkles size={120} className="text-blue-600" />
+              {/* Intro card — matching original */}
+              <div className="mb-12 relative bg-white border border-blue-100 rounded-[2rem] shadow-2xl shadow-blue-900/5 p-8 md:p-10 text-center overflow-hidden">
+                <div className="absolute top-4 right-4 opacity-5">
+                  <Sparkles size={140} className="text-blue-600" />
                 </div>
-                <div className="relative z-10 max-w-2xl mx-auto">
+                <div className="relative max-w-2xl mx-auto">
+                  <div className="flex items-center justify-center gap-2 mb-5">
+                    <ShieldCheck size={20} className="text-blue-600" />
+                    <span className="text-xs font-bold text-blue-600 uppercase tracking-widest">Welcome back, {currentUser.email?.split('@')[0]}</span>
+                  </div>
                   <p className="text-xl md:text-2xl text-slate-800 leading-relaxed font-medium">
                     This app was created to allow anyone searching for a new place to live some insight into that place —{' '}
                     <span className="text-blue-600 font-bold">just as property professionals use.</span>{' '}
@@ -181,43 +196,50 @@ const App: React.FC = () => {
                 </div>
               </div>
 
-              <h1 className="text-5xl md:text-6xl font-black text-slate-900 mb-6 leading-tight">
+              {/* Hero headline */}
+              <h1 className="text-5xl md:text-6xl font-black text-slate-900 mb-5 leading-[1.1] tracking-tight">
                 Searching for your next home?{' '}
-                <span className="text-blue-600"> Get intelligent insight.</span>
+                <span className="text-blue-600">Get intelligent insight.</span>
               </h1>
-              <p className="text-xl text-slate-600 mb-10 max-w-2xl mx-auto leading-relaxed">
+              <p className="text-lg md:text-xl text-slate-500 mb-10 max-w-2xl mx-auto leading-relaxed">
                 The most comprehensive area reports for the UK — including side-by-side comparisons and deep AI analysis.
               </p>
 
-              {/* Search form */}
-              <form onSubmit={handleSearch} className="relative max-w-2xl mx-auto group mb-12">
+              {/* Search bar */}
+              <form onSubmit={handleSearch} className="relative max-w-2xl mx-auto group mb-4">
                 <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
-                  <Search size={24} />
+                  <Search size={22} />
                 </div>
                 <input
                   type="text"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   placeholder="Enter full address and postcode in UK …"
-                  className="w-full pl-14 pr-32 py-5 rounded-2xl border-2 border-slate-200 focus:border-blue-600 focus:ring-4 focus:ring-blue-50 outline-none text-lg transition-all shadow-xl bg-white text-slate-900"
+                  className="w-full pl-14 pr-36 py-5 rounded-2xl border-2 border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none text-lg transition-all shadow-xl bg-white text-slate-900 placeholder:text-slate-400"
                 />
                 <button
                   type="submit"
-                  className="absolute right-3 top-2.5 bottom-2.5 bg-blue-600 text-white px-8 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg active:scale-95"
+                  className="absolute right-3 top-2.5 bottom-2.5 bg-blue-600 text-white px-7 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg active:scale-95 text-base"
                 >
                   Analyse
                 </button>
               </form>
 
+              {/* AI note under search */}
+              <p className="text-xs text-slate-400 mb-12 flex items-center justify-center gap-1.5">
+                <Info size={12} />
+                Reports are AI-generated. Always verify data independently before making any property decisions.
+              </p>
+
               {/* Newsletter */}
-              <div className="max-w-xl mx-auto bg-slate-50 border border-slate-200 rounded-2xl p-6 shadow-sm mb-16">
-                <div className="flex items-center gap-3 mb-4 justify-center">
-                  <Mail className="text-blue-600" size={20} />
+              <div className="max-w-xl mx-auto bg-white border border-slate-200 rounded-2xl p-6 shadow-sm mb-16">
+                <div className="flex items-center gap-2 mb-4 justify-center">
+                  <Mail className="text-blue-600" size={18} />
                   <h3 className="font-bold text-slate-800">Receive our Newsletter if you wish</h3>
                 </div>
                 {subscribed ? (
-                  <div className="flex items-center justify-center gap-2 text-emerald-600 font-bold animate-bounce">
-                    <CheckCircle2 size={20} /> Thanks for joining!
+                  <div className="flex items-center justify-center gap-2 text-emerald-600 font-bold">
+                    <CheckCircle2 size={18} /> Thanks for joining!
                   </div>
                 ) : (
                   <form onSubmit={handleSubscribe} className="flex gap-2">
@@ -229,32 +251,32 @@ const App: React.FC = () => {
                       className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 outline-none text-sm bg-white"
                       required
                     />
-                    <button className="bg-slate-900 text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-800 transition-colors flex items-center gap-2 group">
-                      Notify <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                    <button className="bg-slate-900 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-800 transition-colors flex items-center gap-2 group">
+                      Notify Me <ArrowRight size={15} className="group-hover:translate-x-0.5 transition-transform" />
                     </button>
                   </form>
                 )}
-                <p className="mt-3 text-[10px] text-slate-400 uppercase font-bold tracking-widest">
-                  JOIN 2,500+ USERS GETTING AI PROPERTY INSIGHTS
+                <p className="mt-3 text-[10px] text-slate-400 uppercase font-bold tracking-widest text-center">
+                  Join 2,500+ users getting AI property insights
                 </p>
               </div>
 
               {/* Coverage areas */}
-              <div className="max-w-3xl mx-auto py-12 border-t border-slate-100">
-                <div className="flex items-center justify-center gap-2 text-slate-400 mb-6">
-                  <Globe size={16} />
-                  <h2 className="text-sm font-bold uppercase tracking-widest">Major Coverage Areas in England</h2>
+              <div className="max-w-3xl mx-auto py-10 border-t border-slate-100">
+                <div className="flex items-center justify-center gap-2 text-slate-400 mb-5">
+                  <Globe size={14} />
+                  <span className="text-xs font-bold uppercase tracking-widest">Major Coverage Areas in England</span>
                 </div>
-                <div className="flex flex-wrap justify-center gap-x-6 gap-y-3">
+                <div className="flex flex-wrap justify-center gap-x-5 gap-y-2.5">
                   {coverageAreas.map((city) => (
-                    <span key={city} className="text-slate-500 hover:text-blue-600 cursor-default transition-colors font-medium">
+                    <span key={city} className="text-slate-400 hover:text-blue-600 cursor-default transition-colors text-sm font-medium">
                       Property Reports {city}
                     </span>
                   ))}
                 </div>
-                <p className="mt-8 text-slate-400 text-xs leading-relaxed max-w-lg mx-auto">
-                  NestCheck UK provides deep area intelligence for home buyers and renters across the South Coast
-                  (Bournemouth, Poole, Christchurch), Midlands, North West, and all major English regions.
+                <p className="mt-6 text-slate-400 text-xs leading-relaxed max-w-lg mx-auto text-center">
+                  Home Notes provides AI-generated area intelligence for home buyers and renters across the South Coast,
+                  Midlands, North West, and all major English regions.
                 </p>
               </div>
             </div>
@@ -276,9 +298,9 @@ const App: React.FC = () => {
         {status === AppState.ERROR && (
           <div className="max-w-2xl mx-auto px-4 py-32 text-center">
             <div className="bg-red-50 text-red-600 p-8 rounded-3xl border border-red-100 inline-block mb-6">
-              <AlertCircle size={48} className="mx-auto mb-4" />
-              <h2 className="text-2xl font-bold mb-2">Something went wrong</h2>
-              <p className="text-red-700 opacity-80">{error}</p>
+              <AlertCircle size={44} className="mx-auto mb-3" />
+              <h2 className="text-xl font-bold mb-2">Something went wrong</h2>
+              <p className="text-red-700 opacity-80 text-sm">{error}</p>
             </div>
             <div>
               <button onClick={handleReset} className="bg-slate-900 text-white px-8 py-3 rounded-xl font-bold hover:bg-slate-800 shadow-lg">
@@ -288,6 +310,44 @@ const App: React.FC = () => {
           </div>
         )}
       </main>
+
+      {/* Disclaimer Modal */}
+      {showDisclaimer && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={() => setShowDisclaimer(false)} />
+          <div className="relative bg-white rounded-3xl shadow-2xl max-w-lg w-full p-8">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="bg-amber-50 p-2.5 rounded-xl"><ShieldCheck className="text-amber-600" size={22} /></div>
+              <h2 className="text-xl font-black text-slate-900">AI Disclaimer</h2>
+            </div>
+            <div className="space-y-4 text-sm text-slate-600 leading-relaxed">
+              <p>
+                <strong className="text-slate-900">Home Notes uses AI language models</strong> to generate property area reports. The information provided — including broadband speeds, school ratings, crime statistics, flood risk assessments, and local amenities — is <strong>AI-generated</strong> and sourced from the model&apos;s training data.
+              </p>
+              <p>
+                This data <strong>may not reflect current, accurate, or real-world conditions</strong>. It should be treated as a general starting point for research only, not as authoritative or up-to-date factual information.
+              </p>
+              <p>
+                <strong className="text-slate-900">Before making any property decision</strong> — whether buying, renting, or investing — you should always:
+              </p>
+              <ul className="list-disc list-inside space-y-1 pl-2">
+                <li>Verify all data from official sources (Ofsted, Environment Agency, Ofcom, ONS)</li>
+                <li>Consult a qualified surveyor, solicitor, or financial adviser</li>
+                <li>Conduct your own independent research</li>
+              </ul>
+              <p>
+                Kadima Systems Ltd accepts <strong>no liability</strong> for decisions made based on information provided by this application.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowDisclaimer(false)}
+              className="mt-6 w-full bg-slate-900 text-white py-3 rounded-xl font-bold hover:bg-slate-800 transition-colors"
+            >
+              Understood
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Professional Insights Agent */}
       {showProfessionalAgent && (
@@ -302,7 +362,7 @@ const App: React.FC = () => {
         className="fixed bottom-6 right-6 z-[60] bg-emerald-500 text-white p-4 rounded-full shadow-2xl hover:bg-emerald-600 hover:scale-110 transition-all group flex items-center gap-2"
         aria-label="Contact us on WhatsApp"
       >
-        <MessageCircle size={24} />
+        <MessageCircle size={22} />
         <span className="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs transition-all duration-500 text-sm font-bold">
           WhatsApp Us
         </span>
@@ -314,30 +374,28 @@ const App: React.FC = () => {
           <div className="flex flex-col md:flex-row justify-between items-start gap-8 border-b border-slate-800 pb-8 mb-8">
             <div className="max-w-md">
               <div className="flex items-center gap-2 mb-4">
-                <div className="bg-blue-600 p-1 rounded-lg"><Home className="text-white" size={16} /></div>
-                <span className="text-lg font-bold text-white tracking-tight">NestCheckUK</span>
+                <div className="bg-blue-600 p-1 rounded-lg"><Home className="text-white" size={15} /></div>
+                <span className="text-lg font-bold text-white tracking-tight">HomeNotes</span>
               </div>
-              <p className="text-sm italic mb-4">AI-Driven Real Estate Intelligence for England.</p>
-              <div className="mb-6">
+              <p className="text-sm italic mb-4">AI-Assisted Property Intelligence for England.</p>
+              <div className="mb-5">
                 <h4 className="text-white text-xs font-bold uppercase mb-3">Contact Support</h4>
                 <a href={whatsappUrl} target="_blank" rel="noopener noreferrer"
                    className="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-4 py-2 rounded-lg hover:bg-emerald-500/20 transition-all text-sm font-medium">
-                  <MessageCircle size={18} /> 07724 601320 (WhatsApp)
+                  <MessageCircle size={16} /> 07724 601320 (WhatsApp)
                 </a>
               </div>
               <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-800">
                 <h4 className="text-white text-xs font-bold uppercase mb-2">Legal Disclaimer</h4>
                 <p className="text-[11px] leading-relaxed">
-                  The data provided by NestCheck UK is sourced from AI analysis. We make no warranties,
-                  expressed or implied, as to the accuracy, completeness, or reliability of this information.
-                  Users are strictly responsible for verifying the data themselves and should consult with
-                  professional surveyors or solicitors before making any commitments.
+                  Reports are generated by AI and may be inaccurate or outdated. Home Notes makes no warranties as to the accuracy or completeness of any information provided. Always verify independently and consult qualified professionals before making any property commitments.
                 </p>
               </div>
             </div>
             <div className="flex gap-8 text-sm">
               <div className="flex flex-col gap-2">
                 <h4 className="text-white text-xs font-bold uppercase mb-2">Navigation</h4>
+                <button onClick={() => setShowDisclaimer(true)} className="hover:text-white text-left">AI Disclaimer</button>
                 <a href="#" className="hover:text-white">Privacy Policy</a>
                 <a href="#" className="hover:text-white">Terms of Service</a>
               </div>
@@ -351,8 +409,8 @@ const App: React.FC = () => {
             </div>
           </div>
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-medium uppercase tracking-widest opacity-60">
-            <p>© 2026 Kadima Systems Ltd • Powered by Claude AI</p>
-            <p>Empowering home searches with local intelligence</p>
+            <p>© 2026 Kadima Systems Ltd · Powered by Claude AI</p>
+            <p>AI-assisted property area intelligence</p>
           </div>
         </div>
       </footer>

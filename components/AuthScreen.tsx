@@ -5,9 +5,8 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendEmailVerification,
-  signInWithPopup,
 } from 'firebase/auth';
-import { auth, googleProvider } from '../services/firebase';
+import { auth } from '../services/firebase';
 import { Home, Mail, Lock, Eye, EyeOff, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 type Mode = 'signin' | 'signup';
@@ -40,7 +39,7 @@ export function AuthScreen() {
         }
       }
     } catch (err: unknown) {
-      const msg = (err as { code?: string; message?: string }).code;
+      const msg = (err as { code?: string }).code;
       if (msg === 'auth/invalid-credential' || msg === 'auth/user-not-found' || msg === 'auth/wrong-password') {
         setError('Invalid email or password.');
       } else if (msg === 'auth/email-already-in-use') {
@@ -51,21 +50,6 @@ export function AuthScreen() {
         setError('Too many attempts. Please try again later.');
       } else {
         setError('Something went wrong. Please try again.');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleGoogle = async () => {
-    setLoading(true);
-    clearError();
-    try {
-      await signInWithPopup(auth, googleProvider);
-    } catch (err: unknown) {
-      const code = (err as { code?: string }).code;
-      if (code !== 'auth/popup-closed-by-user') {
-        setError('Google sign-in failed. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -103,7 +87,7 @@ export function AuthScreen() {
             <Home className="text-white" size={22} />
           </div>
           <span className="text-2xl font-black text-slate-900 tracking-tight">
-            NestCheck<span className="text-blue-600">UK</span>
+            Home<span className="text-blue-600">Notes</span>
           </span>
         </div>
 
@@ -184,29 +168,6 @@ export function AuthScreen() {
           </button>
         </form>
 
-        {/* Divider */}
-        <div className="flex items-center gap-3 my-4">
-          <div className="flex-1 h-px bg-slate-200" />
-          <span className="text-xs text-slate-400 font-medium">OR</span>
-          <div className="flex-1 h-px bg-slate-200" />
-        </div>
-
-        {/* Google */}
-        <button
-          onClick={handleGoogle}
-          disabled={loading}
-          className="w-full flex items-center justify-center gap-3 border-2 border-slate-200 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-50 transition-colors text-sm disabled:opacity-60"
-        >
-          {/* Google icon */}
-          <svg width="18" height="18" viewBox="0 0 18 18">
-            <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/>
-            <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/>
-            <path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/>
-            <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
-          </svg>
-          Continue with Google
-        </button>
-
         <p className="text-center text-xs text-slate-400 mt-6">
           {mode === 'signin' ? "Don't have an account? " : 'Already have an account? '}
           <button
@@ -216,6 +177,15 @@ export function AuthScreen() {
             {mode === 'signin' ? 'Sign up' : 'Sign in'}
           </button>
         </p>
+
+        {/* AI Disclaimer */}
+        <div className="mt-6 pt-5 border-t border-slate-100">
+          <p className="text-[10px] text-slate-400 leading-relaxed text-center">
+            <strong className="text-slate-500">AI Disclaimer:</strong> Home Notes uses AI language models to generate property area reports. 
+            All data is AI-generated and may not reflect current or accurate real-world conditions. 
+            Always verify independently and consult qualified professionals before making any property decisions.
+          </p>
+        </div>
       </div>
     </div>
   );
