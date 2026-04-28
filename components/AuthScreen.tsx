@@ -11,7 +11,7 @@ import { Home, Mail, Lock, Eye, EyeOff, Loader2, AlertCircle, CheckCircle2 } fro
 
 type Mode = 'signin' | 'signup';
 
-export function AuthScreen() {
+export function AuthScreen({ onBack }: { onBack?: () => void } = {}) {
   const [mode, setMode] = useState<Mode>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -81,6 +81,12 @@ export function AuthScreen() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 px-4">
       <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-8 max-w-md w-full">
+        {/* Back button */}
+        {onBack && (
+          <button onClick={onBack} className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-600 mb-4 transition-colors">
+            ← Back
+          </button>
+        )}
         {/* Logo */}
         <div className="flex items-center gap-2 mb-8 justify-center">
           <div className="bg-blue-600 p-2 rounded-xl">
