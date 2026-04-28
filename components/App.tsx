@@ -9,10 +9,11 @@ import { LoadingScreen } from './LoadingScreen';
 import { ReportDashboard } from './ReportDashboard';
 import { ProfessionalInsightsAgent } from './ProfessionalInsightsAgent';
 import { AuthScreen } from './AuthScreen';
+import { MyReports } from './MyReports';
 import {
   Search, Home, Mail, ArrowRight, CheckCircle2, Globe,
   MessageCircle, Briefcase, LogOut, Loader2, Sparkles,
-  AlertCircle, ShieldCheck, Info
+  AlertCircle, ShieldCheck, Info, History
 } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -28,6 +29,7 @@ const App: React.FC = () => {
   const [isComparing, setIsComparing] = useState(false);
   const [showProfessionalAgent, setShowProfessionalAgent] = useState(false);
   const [showDisclaimer, setShowDisclaimer] = useState(false);
+  const [showMyReports, setShowMyReports] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -41,6 +43,25 @@ const App: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
+  // Auto-save report to Supabase whenever a new report is generated
+  const saveReport = async (rep: PropertyReport, userEmail: string) => {
+    try {
+      await fetch('/api/save-report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_email: userEmail,
+          address: rep.address,
+          postcode: rep.postcode || '',
+          report_data: rep,
+        }),
+      });
+    } catch (err) {
+      console.error('Failed to save report:', err);
+      // Non-fatal — don't interrupt the user
+    }
+  };
+
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!address.trim()) return;
@@ -51,6 +72,10 @@ const App: React.FC = () => {
       setReport(data);
       setSecondReport(null);
       setStatus(AppState.REPORT);
+      // Save to Supabase in the background
+      if (currentUser?.email) {
+        saveReport(data, currentUser.email);
+      }
     } catch (err: unknown) {
       setError((err as Error).message || 'An unexpected error occurred.');
       setStatus(AppState.ERROR);
@@ -64,6 +89,10 @@ const App: React.FC = () => {
       const data = await fetchPropertyReport(targetAddress);
       setSecondReport(data);
       setStatus(AppState.COMPARING);
+      // Save comparison report too
+      if (currentUser?.email) {
+        saveReport(data, currentUser.email);
+      }
     } catch (err: unknown) {
       alert('Could not fetch comparison address: ' + (err as Error).message);
     } finally {
@@ -71,12 +100,20 @@ const App: React.FC = () => {
     }
   };
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email.includes('@')) {
-      setSubscribed(true);
-      setTimeout(() => { setSubscribed(false); setEmail(''); }, 5000);
+    if (!email.includes('@')) return;
+    try {
+      await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+    } catch (err) {
+      console.error('Subscribe error:', err);
     }
+    setSubscribed(true);
+    setTimeout(() => { setSubscribed(false); setEmail(''); }, 5000);
   };
 
   const handleReset = () => {
@@ -89,6 +126,13 @@ const App: React.FC = () => {
 
   const handleLogout = async () => {
     try { await signOut(auth); handleReset(); } catch (err) { console.error('Sign out error:', err); }
+  };
+
+  // Load a saved report from history
+  const handleLoadSavedReport = (rep: PropertyReport) => {
+    setReport(rep);
+    setSecondReport(null);
+    setStatus(AppState.REPORT);
   };
 
   const coverageAreas = [
@@ -109,14 +153,12 @@ const App: React.FC = () => {
     );
   }
 
-  if (!currentUser) {
-    return <AuthScreen />;
-  }
+  if (!currentUser) return <AuthScreen />;
 
   return (
     <div className="min-h-screen flex flex-col text-slate-900">
 
-      {/* Header */}
+      {/* ── HEADER ─────────────────────────────────────────── */}
       <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 cursor-pointer group" onClick={handleReset}>
@@ -127,26 +169,34 @@ const App: React.FC = () => {
               Home<span className="text-blue-600">Notes</span>
             </span>
           </div>
-          <nav className="flex items-center gap-3 md:gap-5">
+          <nav className="flex items-center gap-3 md:gap-4">
+            <button
+              onClick={() => setShowMyReports(true)}
+              className="flex items-center gap-1.5 text-sm font-bold text-slate-600 hover:text-blue-600 transition-colors"
+              title="My saved reports"
+            >
+              <History size={17} />
+              <span className="hidden sm:inline">My Reports</span>
+            </button>
             <button
               onClick={() => setShowDisclaimer(true)}
-              className="hidden sm:flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors"
+              className="hidden sm:flex items-center gap-1.5 text-sm font-medium text-slate-400 hover:text-slate-700 transition-colors"
             >
               <Info size={15} /> Disclaimer
             </button>
             <a href={whatsappUrl} target="_blank" rel="noopener noreferrer"
-               className="hidden sm:flex items-center gap-1.5 text-sm font-bold text-emerald-600 hover:text-emerald-700">
+               className="hidden md:flex items-center gap-1.5 text-sm font-bold text-emerald-600 hover:text-emerald-700">
               <MessageCircle size={17} /> Support
             </a>
             <button
               onClick={() => setShowProfessionalAgent(true)}
-              className="hidden sm:flex items-center gap-2 text-sm font-bold text-blue-600 hover:text-blue-700 bg-blue-50 px-4 py-2 rounded-full transition-all hover:bg-blue-100"
+              className="hidden sm:flex items-center gap-2 text-sm font-bold text-blue-600 hover:text-blue-700 bg-blue-50 px-3 py-1.5 rounded-full transition-all hover:bg-blue-100"
             >
-              <Briefcase size={15} /> Professional
+              <Briefcase size={15} /> Pro
             </button>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-1.5 text-sm font-bold text-slate-400 hover:text-red-600 transition-colors"
+              className="flex items-center gap-1.5 text-sm font-bold text-slate-400 hover:text-red-500 transition-colors"
             >
               <LogOut size={17} />
               <span className="hidden sm:inline">Sign Out</span>
@@ -155,13 +205,12 @@ const App: React.FC = () => {
         </div>
       </header>
 
-      {/* Main */}
+      {/* ── MAIN ───────────────────────────────────────────── */}
       <main className="flex-grow">
 
-        {/* ── IDLE / HOME ─────────────────────────────────── */}
+        {/* IDLE / HOME */}
         {status === AppState.IDLE && (
           <div className="relative overflow-hidden bg-gradient-to-b from-white via-slate-50 to-white">
-
             {/* Decorative blobs */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden -z-10">
               <div className="absolute -top-24 -left-24 w-96 h-96 bg-blue-200/30 blur-3xl rounded-full" />
@@ -177,15 +226,17 @@ const App: React.FC = () => {
                 AI Powered UK Property Area Intelligence
               </div>
 
-              {/* Intro card — matching original */}
+              {/* Intro card */}
               <div className="mb-12 relative bg-white border border-blue-100 rounded-[2rem] shadow-2xl shadow-blue-900/5 p-8 md:p-10 text-center overflow-hidden">
                 <div className="absolute top-4 right-4 opacity-5">
                   <Sparkles size={140} className="text-blue-600" />
                 </div>
                 <div className="relative max-w-2xl mx-auto">
                   <div className="flex items-center justify-center gap-2 mb-5">
-                    <ShieldCheck size={20} className="text-blue-600" />
-                    <span className="text-xs font-bold text-blue-600 uppercase tracking-widest">Welcome back, {currentUser.email?.split('@')[0]}</span>
+                    <ShieldCheck size={18} className="text-blue-600" />
+                    <span className="text-xs font-bold text-blue-600 uppercase tracking-widest">
+                      Welcome back, {currentUser.email?.split('@')[0]}
+                    </span>
                   </div>
                   <p className="text-xl md:text-2xl text-slate-800 leading-relaxed font-medium">
                     This app was created to allow anyone searching for a new place to live some insight into that place —{' '}
@@ -196,7 +247,7 @@ const App: React.FC = () => {
                 </div>
               </div>
 
-              {/* Hero headline */}
+              {/* Hero */}
               <h1 className="text-5xl md:text-6xl font-black text-slate-900 mb-5 leading-[1.1] tracking-tight">
                 Searching for your next home?{' '}
                 <span className="text-blue-600">Get intelligent insight.</span>
@@ -224,11 +275,9 @@ const App: React.FC = () => {
                   Analyse
                 </button>
               </form>
-
-              {/* AI note under search */}
               <p className="text-xs text-slate-400 mb-12 flex items-center justify-center gap-1.5">
-                <Info size={12} />
-                Reports are AI-generated. Always verify data independently before making any property decisions.
+                <Info size={11} />
+                Reports are AI-generated and saved to your account. Always verify independently.
               </p>
 
               {/* Newsletter */}
@@ -311,6 +360,8 @@ const App: React.FC = () => {
         )}
       </main>
 
+      {/* ── MODALS & OVERLAYS ──────────────────────────────── */}
+
       {/* Disclaimer Modal */}
       {showDisclaimer && (
         <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
@@ -322,22 +373,20 @@ const App: React.FC = () => {
             </div>
             <div className="space-y-4 text-sm text-slate-600 leading-relaxed">
               <p>
-                <strong className="text-slate-900">Home Notes uses AI language models</strong> to generate property area reports. The information provided — including broadband speeds, school ratings, crime statistics, flood risk assessments, and local amenities — is <strong>AI-generated</strong> and sourced from the model&apos;s training data.
+                <strong className="text-slate-900">Home Notes uses AI language models</strong> to generate property area reports.
+                The information provided — including broadband speeds, school ratings, crime statistics, flood risk, and local amenities — is{' '}
+                <strong>AI-generated</strong> and sourced from the model&apos;s training data.
               </p>
               <p>
-                This data <strong>may not reflect current, accurate, or real-world conditions</strong>. It should be treated as a general starting point for research only, not as authoritative or up-to-date factual information.
+                This data <strong>may not reflect current, accurate, or real-world conditions.</strong> It should be treated as a general starting point for research only, not as authoritative or up-to-date factual information.
               </p>
-              <p>
-                <strong className="text-slate-900">Before making any property decision</strong> — whether buying, renting, or investing — you should always:
-              </p>
+              <p><strong className="text-slate-900">Before making any property decision</strong> you should always:</p>
               <ul className="list-disc list-inside space-y-1 pl-2">
                 <li>Verify all data from official sources (Ofsted, Environment Agency, Ofcom, ONS)</li>
                 <li>Consult a qualified surveyor, solicitor, or financial adviser</li>
                 <li>Conduct your own independent research</li>
               </ul>
-              <p>
-                Kadima Systems Ltd accepts <strong>no liability</strong> for decisions made based on information provided by this application.
-              </p>
+              <p>Kadima Systems Ltd accepts <strong>no liability</strong> for decisions made based on information provided by this application.</p>
             </div>
             <button
               onClick={() => setShowDisclaimer(false)}
@@ -349,12 +398,21 @@ const App: React.FC = () => {
         </div>
       )}
 
+      {/* My Reports Panel */}
+      {showMyReports && currentUser?.email && (
+        <MyReports
+          userEmail={currentUser.email}
+          onClose={() => setShowMyReports(false)}
+          onLoadReport={handleLoadSavedReport}
+        />
+      )}
+
       {/* Professional Insights Agent */}
       {showProfessionalAgent && (
         <ProfessionalInsightsAgent onClose={() => setShowProfessionalAgent(false)} />
       )}
 
-      {/* Floating WhatsApp FAB */}
+      {/* WhatsApp FAB */}
       <a
         href={whatsappUrl}
         target="_blank"
@@ -375,7 +433,7 @@ const App: React.FC = () => {
             <div className="max-w-md">
               <div className="flex items-center gap-2 mb-4">
                 <div className="bg-blue-600 p-1 rounded-lg"><Home className="text-white" size={15} /></div>
-                <span className="text-lg font-bold text-white tracking-tight">HomeNotes</span>
+                <span className="text-lg font-bold text-white">HomeNotes</span>
               </div>
               <p className="text-sm italic mb-4">AI-Assisted Property Intelligence for England.</p>
               <div className="mb-5">
@@ -388,23 +446,24 @@ const App: React.FC = () => {
               <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-800">
                 <h4 className="text-white text-xs font-bold uppercase mb-2">Legal Disclaimer</h4>
                 <p className="text-[11px] leading-relaxed">
-                  Reports are generated by AI and may be inaccurate or outdated. Home Notes makes no warranties as to the accuracy or completeness of any information provided. Always verify independently and consult qualified professionals before making any property commitments.
+                  Reports are generated by AI and may be inaccurate or outdated. Home Notes makes no warranties as to the accuracy of any information provided. Always verify independently and consult qualified professionals before making any property commitments.
                 </p>
               </div>
             </div>
             <div className="flex gap-8 text-sm">
               <div className="flex flex-col gap-2">
                 <h4 className="text-white text-xs font-bold uppercase mb-2">Navigation</h4>
+                <button onClick={() => setShowMyReports(true)} className="hover:text-white text-left">My Reports</button>
                 <button onClick={() => setShowDisclaimer(true)} className="hover:text-white text-left">AI Disclaimer</button>
                 <a href="#" className="hover:text-white">Privacy Policy</a>
                 <a href="#" className="hover:text-white">Terms of Service</a>
               </div>
               <div className="flex flex-col gap-2">
-                <h4 className="text-white text-xs font-bold uppercase mb-2">Primary Coverage</h4>
+                <h4 className="text-white text-xs font-bold uppercase mb-2">Coverage</h4>
                 <span className="text-[10px] text-slate-500">Dorset & South Coast:</span>
-                <p className="text-[11px] text-slate-400">Bournemouth, Poole, Christchurch, Dorchester</p>
+                <p className="text-[11px] text-slate-400">Bournemouth, Poole, Christchurch</p>
                 <span className="text-[10px] text-slate-500 mt-2">National Hubs:</span>
-                <p className="text-[11px] text-slate-400">London, Manchester, Birmingham, Leeds</p>
+                <p className="text-[11px] text-slate-400">London, Manchester, Birmingham</p>
               </div>
             </div>
           </div>
