@@ -197,11 +197,14 @@ export default function PublicLanding() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ address }),
       });
-      if (!res.ok) throw new Error('Failed');
       const data = await res.json();
+      if (!res.ok) {
+        setTeaserError(data.error || 'HTTP ' + res.status + ' error from API');
+        return;
+      }
       setTeaserReport(data);
-    } catch {
-      setTeaserError('Could not generate report. Please check the address and try again.');
+    } catch (err: unknown) {
+      setTeaserError('Network error: ' + (err instanceof Error ? err.message : String(err)));
     } finally {
       setTeaserLoading(false);
     }
