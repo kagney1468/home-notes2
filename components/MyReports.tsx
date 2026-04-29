@@ -12,18 +12,19 @@ interface ReportSummary {
 }
 
 interface Props {
+  userId: string;
   userEmail: string;
   onClose: () => void;
   onLoadReport: (report: PropertyReport) => void;
 }
 
-export function MyReports({ userEmail, onClose, onLoadReport }: Props) {
+export function MyReports({ userId, userEmail, onClose, onLoadReport }: Props) {
   const [reports, setReports] = useState<ReportSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch(`/api/get-reports?email=${encodeURIComponent(userEmail)}`)
+    fetch(`/api/get-reports?user_id=${userId}`)
       .then(r => r.json())
       .then(d => setReports(d.reports || []))
       .catch(console.error)
@@ -33,7 +34,7 @@ export function MyReports({ userEmail, onClose, onLoadReport }: Props) {
   const handleLoad = async (id: string) => {
     setLoadingId(id);
     try {
-      const res = await fetch(`/api/get-report?id=${id}&email=${encodeURIComponent(userEmail)}`);
+      const res = await fetch(`/api/get-report?id=${id}&user_id=${userId}`);
       const data = await res.json();
       if (data.report_data) {
         onLoadReport(data.report_data as PropertyReport);

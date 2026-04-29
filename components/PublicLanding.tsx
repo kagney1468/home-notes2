@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { onAuthStateChanged, User } from 'firebase/auth';
-import { auth } from '../services/firebase';
+import { getSupabaseClient } from '../services/supabase-auth';
+import type { User } from '@supabase/supabase-js';
 import App from './App';
 import { AuthScreen } from './AuthScreen';
 import {
@@ -175,14 +175,18 @@ export default function PublicLanding() {
   const [teaserError, setTeaserError] = useState('');
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (u) => {
-      setUser(u && u.emailVerified ? u : null);
+    const supabase = getSupabaseClient();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
       setAuthChecking(false);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
     });
     // Listen for auth trigger from teaser card
     const handler = () => setShowAuth(true);
     window.addEventListener('show-auth', handler);
-    return () => { unsub(); window.removeEventListener('show-auth', handler); };
+    return () => { subscription.unsubscribe(); window.removeEventListener('show-auth', handler); };
   }, []);
 
   const handleTeaserSearch = async (e: React.FormEvent) => {

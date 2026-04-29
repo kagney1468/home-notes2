@@ -1,18 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  sendEmailVerification,
-  sendPasswordResetEmail,
-} from 'firebase/auth';
-import { auth } from '../services/firebase';
+import { getSupabaseClient } from '../services/supabase-auth';
 import { Home, Mail, Lock, Eye, EyeOff, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 type Mode = 'signin' | 'signup';
 
-export function AuthScreen({ onBack }: { onBack?: () => void } = {}) {
+export function AuthScreen({ onBack }: { onBack?: () => void }) {
   const [mode, setMode] = useState<Mode>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -24,28 +18,7 @@ export function AuthScreen({ onBack }: { onBack?: () => void } = {}) {
   const [resetLoading, setResetLoading] = useState(false);
 
   const clearError = () => setError(null);
-
-  const handleForgotPassword = async () => {
-    if (!email.trim()) {
-      setError('Please enter your email address above first.');
-      return;
-    }
-    setResetLoading(true);
-    clearError();
-    try {
-      await sendPasswordResetEmail(auth, email);
-      setResetSent(true);
-    } catch (err: unknown) {
-      const code = (err as { code?: string }).code;
-      if (code === 'auth/user-not-found') {
-        setError('No account found with that email address.');
-      } else {
-        setError('Could not send reset email. Please try again.');
-      }
-    } finally {
-      setResetLoading(false);
-    }
-  };
+  const supabase = getSupabaseClient();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,44 +26,63 @@ export function AuthScreen({ onBack }: { onBack?: () => void } = {}) {
     clearError();
     try {
       if (mode === 'signup') {
-        const cred = await createUserWithEmailAndPassword(auth, email, password);
-        await sendEmailVerification(cred.user);
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { emailRedirectTo: 'https://ourhomenotes.co.uk' }
+        });
+        if (error) throw error;
         setVerificationSent(true);
       } else {
-        const cred = await signInWithEmailAndPassword(auth, email, password);
-        if (!cred.user.emailVerified) {
-          setError('Please verify your email before signing in. Check your inbox for a verification link.');
-          await auth.signOut();
-        }
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        // Auth state change handled by onAuthStateChange in App
       }
     } catch (err: unknown) {
-      const msg = (err as { code?: string }).code;
-      if (msg === 'auth/invalid-credential' || msg === 'auth/user-not-found' || msg === 'auth/wrong-password') {
+      const msg = (err as { message?: string }).message || '';
+      if (msg.includes('Invalid login') || msg.includes('invalid_credentials')) {
         setError('Invalid email or password.');
-      } else if (msg === 'auth/email-already-in-use') {
+      } else if (msg.includes('already registered')) {
         setError('An account with this email already exists.');
-      } else if (msg === 'auth/weak-password') {
+      } else if (msg.includes('Password should')) {
         setError('Password must be at least 6 characters.');
-      } else if (msg === 'auth/too-many-requests') {
-        setError('Too many attempts. Please try again later.');
+      } else if (msg.includes('Email not confirmed')) {
+        setError('Please verify your email first. Check your inbox for the confirmation link.');
       } else {
-        setError('Something went wrong. Please try again.');
+        setError(msg || 'Something went wrong. Please try again.');
       }
     } finally {
       setLoading(false);
     }
   };
 
+  const handleForgotPassword = async () => {
+    if (!email.trim()) { setError('Please enter your email address above first.'); return; }
+    setResetLoading(true);
+    clearError();
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: 'https://ourhomenotes.co.uk/reset-password'
+      });
+      if (error) throw error;
+      setResetSent(true);
+    } catch (err: unknown) {
+      setError((err as { message?: string }).message || 'Could not send reset email. Please try again.');
+    } finally {
+      setResetLoading(false);
+    }
+  };
+
   if (verificationSent) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 px-4">
         <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-10 max-w-md w-full text-center">
           <div className="bg-emerald-50 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
             <CheckCircle2 className="text-emerald-600" size={32} />
           </div>
           <h2 className="text-2xl font-black text-slate-900 mb-3">Check your inbox</h2>
           <p className="text-slate-600 mb-6">
-            We&apos;ve sent a verification link to <strong>{email}</strong>. Click the link to activate your account, then come back and sign in.
+            We&apos;ve sent a confirmation link to <strong>{email}</strong>. Click it to activate your account, then sign in.
           </p>
           <button
             onClick={() => { setVerificationSent(false); setMode('signin'); }}
@@ -106,12 +98,14 @@ export function AuthScreen({ onBack }: { onBack?: () => void } = {}) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 px-4">
       <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-8 max-w-md w-full">
+
         {/* Back button */}
         {onBack && (
           <button onClick={onBack} className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-600 mb-4 transition-colors">
             ← Back
           </button>
         )}
+
         {/* Logo */}
         <div className="flex items-center gap-2 mb-8 justify-center">
           <div className="bg-blue-600 p-2 rounded-xl">
@@ -127,7 +121,7 @@ export function AuthScreen({ onBack }: { onBack?: () => void } = {}) {
           {(['signin', 'signup'] as Mode[]).map((m) => (
             <button
               key={m}
-              onClick={() => { setMode(m); clearError(); }}
+              onClick={() => { setMode(m); clearError(); setResetSent(false); }}
               className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${
                 mode === m ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
               }`}
@@ -148,80 +142,57 @@ export function AuthScreen({ onBack }: { onBack?: () => void } = {}) {
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-1.5">
-              Email
-            </label>
+            <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-1.5">Email</label>
             <div className="relative">
               <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                placeholder="you@example.com"
+                type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+                required placeholder="you@example.com"
                 className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-50 outline-none text-sm transition-all"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-1.5">
-              Password
-            </label>
+            <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-1.5">Password</label>
             <div className="relative">
               <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-                placeholder="••••••••"
+                type={showPassword ? 'text' : 'password'} value={password}
+                onChange={(e) => setPassword(e.target.value)} required minLength={6} placeholder="••••••••"
                 className="w-full pl-10 pr-10 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-50 outline-none text-sm transition-all"
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-              >
+              <button type="button" onClick={() => setShowPassword(v => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
           </div>
 
+          {/* Forgot password */}
           {mode === 'signin' && (
             <div className="flex justify-end -mt-2">
-              {resetSent ? (
-                <span className="text-xs text-emerald-600 font-medium">✓ Reset email sent — check your inbox</span>
-              ) : (
-                <button
-                  type="button"
-                  onClick={handleForgotPassword}
-                  disabled={resetLoading}
-                  className="text-xs text-blue-600 hover:underline font-medium disabled:opacity-50"
-                >
-                  {resetLoading ? 'Sending…' : 'Forgot password?'}
-                </button>
-              )}
+              {resetSent
+                ? <span className="text-xs text-emerald-600 font-medium">✓ Reset email sent — check your inbox</span>
+                : <button type="button" onClick={handleForgotPassword} disabled={resetLoading}
+                    className="text-xs text-blue-600 hover:underline font-medium disabled:opacity-50">
+                    {resetLoading ? 'Sending…' : 'Forgot password?'}
+                  </button>
+              }
             </div>
           )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
-          >
-            {loading ? <Loader2 size={18} className="animate-spin" /> : null}
+          <button type="submit" disabled={loading}
+            className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-60">
+            {loading && <Loader2 size={18} className="animate-spin" />}
             {mode === 'signin' ? 'Sign In' : 'Create Account'}
           </button>
         </form>
 
         <p className="text-center text-xs text-slate-400 mt-6">
           {mode === 'signin' ? "Don't have an account? " : 'Already have an account? '}
-          <button
-            onClick={() => { setMode(mode === 'signin' ? 'signup' : 'signin'); clearError(); }}
-            className="text-blue-600 font-bold hover:underline"
-          >
+          <button onClick={() => { setMode(mode === 'signin' ? 'signup' : 'signin'); clearError(); }}
+            className="text-blue-600 font-bold hover:underline">
             {mode === 'signin' ? 'Sign up' : 'Sign in'}
           </button>
         </p>
@@ -229,9 +200,8 @@ export function AuthScreen({ onBack }: { onBack?: () => void } = {}) {
         {/* AI Disclaimer */}
         <div className="mt-6 pt-5 border-t border-slate-100">
           <p className="text-[10px] text-slate-400 leading-relaxed text-center">
-            <strong className="text-slate-500">AI Disclaimer:</strong> Home Notes uses AI language models to generate property area reports. 
-            All data is AI-generated and may not reflect current or accurate real-world conditions. 
-            Always verify independently and consult qualified professionals before making any property decisions.
+            <strong className="text-slate-500">AI Disclaimer:</strong> Home Notes uses AI to generate property area reports.
+            Data may not reflect current conditions. Always verify independently before making property decisions.
           </p>
         </div>
       </div>

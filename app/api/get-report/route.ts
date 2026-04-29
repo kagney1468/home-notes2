@@ -4,14 +4,14 @@ import { getSupabaseServer } from '../../../services/supabase-server';
 export async function GET(req: NextRequest) {
   try {
     const id = req.nextUrl.searchParams.get('id');
-    const email = req.nextUrl.searchParams.get('email');
-    if (!id || !email) return NextResponse.json({ error: 'Missing params' }, { status: 400 });
+    const userId = req.nextUrl.searchParams.get('user_id');
+    if (!id || !userId) return NextResponse.json({ error: 'Missing params' }, { status: 400 });
     const supabase = getSupabaseServer();
     const { data, error } = await supabase
       .from('reports')
       .select('*')
       .eq('id', id)
-      .eq('user_email', email)
+      .eq('user_id', userId)
       .single();
     if (error) throw error;
     return NextResponse.json(data);
