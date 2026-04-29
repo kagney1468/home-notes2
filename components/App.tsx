@@ -143,7 +143,7 @@ const App: React.FC = () => {
   ];
 
   const whatsappNumber = '447724601320';
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=Hi Home Notes, I have a question about my property report.`;
+  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=Hi Home Sales Ready, I have a question about my Home Notes property report.`;
 
   if (authChecking) {
     return (
@@ -433,7 +433,7 @@ const App: React.FC = () => {
             <div className="max-w-md">
               <div className="flex items-center gap-2 mb-4">
                 <div className="bg-blue-600 p-1 rounded-lg"><Home className="text-white" size={15} /></div>
-                <span className="text-lg font-bold text-white">HomeNotes</span>
+                <span className="text-lg font-bold text-white">Home Notes</span>
               </div>
               <p className="text-sm italic mb-4">AI-Assisted Property Intelligence for England.</p>
               <div className="mb-5">
@@ -455,8 +455,8 @@ const App: React.FC = () => {
                 <h4 className="text-white text-xs font-bold uppercase mb-2">Navigation</h4>
                 <button onClick={() => setShowMyReports(true)} className="hover:text-white text-left">My Reports</button>
                 <button onClick={() => setShowDisclaimer(true)} className="hover:text-white text-left">AI Disclaimer</button>
-                <a href="#" className="hover:text-white">Privacy Policy</a>
-                <a href="#" className="hover:text-white">Terms of Service</a>
+                <a href="/privacy" className="hover:text-white">Privacy Policy</a>
+                <a href="/terms" className="hover:text-white">Terms of Service</a>
               </div>
               <div className="flex flex-col gap-2">
                 <h4 className="text-white text-xs font-bold uppercase mb-2">Coverage</h4>

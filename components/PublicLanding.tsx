@@ -31,7 +31,7 @@ function HSRStrip() {
         <div className="flex items-center gap-2">
           <Building2 size={16} className="text-blue-400 shrink-0" />
           <p className="text-xs font-medium text-slate-300">
-            <span className="text-white font-bold">Powered by HSR</span> — Your trusted local property experts across the South Coast & beyond
+            <span className="text-white font-bold">Powered by Home Sales Ready</span> — the UK's premier property platform for home owners
           </p>
         </div>
         <a
@@ -40,7 +40,7 @@ function HSRStrip() {
           rel="noopener noreferrer"
           className="shrink-0 inline-flex items-center gap-1.5 bg-blue-500 hover:bg-blue-400 text-white text-xs font-bold px-4 py-1.5 rounded-full transition-colors"
         >
-          Visit HSR <ChevronRight size={12} />
+          Home Sales Ready <ChevronRight size={12} />
         </a>
       </div>
     </div>
@@ -385,7 +385,7 @@ export default function PublicLanding() {
                     </div>
                     <div className="mt-6 pt-5 border-t border-white/20">
                       <p className="text-blue-100 text-sm font-medium text-center">
-                        Enter an address above to see your free report →
+                        
                       </p>
                     </div>
                   </div>
@@ -401,13 +401,13 @@ export default function PublicLanding() {
             <div className="flex flex-col md:flex-row items-center justify-between gap-8">
               <div className="text-center md:text-left">
                 <div className="inline-flex items-center gap-2 bg-blue-500/20 text-blue-300 text-xs font-bold px-3 py-1 rounded-full mb-3 uppercase tracking-wider">
-                  <Building2 size={11} /> Powered by HSR
+                  <Building2 size={11} /> Powered by Home Sales Ready
                 </div>
                 <h2 className="text-2xl md:text-3xl font-black text-white mb-2">
                   Ready to take the next step?
                 </h2>
                 <p className="text-slate-400 text-base max-w-md">
-                  Home Notes is brought to you by <strong className="text-white">HSR — Home Sales Ready</strong>.
+                  Home Notes is brought to you by <strong className="text-white">Home Sales Ready</strong>.
                   Our experts are on hand to help you act on what you&apos;ve discovered.
                 </p>
               </div>
@@ -418,10 +418,10 @@ export default function PublicLanding() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-400 text-white font-bold px-6 py-3 rounded-xl transition-colors text-sm"
                 >
-                  <Building2 size={16} /> Visit HSR Website
+                  <Building2 size={16} /> Home Sales Ready
                 </a>
                 <a
-                  href="https://wa.me/447724601320?text=Hi HSR, I just used Home Notes and would like to find out more"
+                  href="https://wa.me/447724601320?text=Hi Home Sales Ready, I just used Home Notes and would like to find out more"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-white font-bold px-6 py-3 rounded-xl transition-colors text-sm"
@@ -494,7 +494,7 @@ export default function PublicLanding() {
               Get your free report <ArrowRight size={18} />
             </button>
             <p className="mt-4 text-xs text-slate-400">
-              Free forever · No credit card · Powered by HSR
+              Free forever · No credit card · Powered by Home Sales Ready
             </p>
           </div>
         </section>
@@ -507,12 +507,14 @@ export default function PublicLanding() {
           <div className="flex items-center gap-2">
             <div className="bg-blue-600 p-1 rounded-lg"><Home className="text-white" size={14} /></div>
             <span className="font-bold text-white text-sm">HomeNotes</span>
-            <span className="text-slate-600 text-xs ml-2">by HSR · Powered by Claude AI</span>
+            <span className="text-slate-600 text-xs ml-2">by Home Sales Ready · Powered by Claude AI</span>
           </div>
           <div className="flex items-center gap-5 text-xs">
-            <a href="https://homesalesready.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">HSR Website</a>
+            <a href="https://homesalesready.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Home Sales Ready</a>
             <a href="https://wa.me/447724601320" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">WhatsApp</a>
             <button onClick={() => setShowAuth(true)} className="hover:text-white transition-colors">Sign In</button>
+            <a href="/privacy" className="hover:text-white transition-colors">Privacy Policy</a>
+            <a href="/terms" className="hover:text-white transition-colors">Terms of Service</a>
           </div>
           <p className="text-[10px] text-slate-600 text-center">
             © 2026 Kadima Systems Ltd · Reports are AI-generated. Verify independently.
