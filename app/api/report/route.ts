@@ -1,7 +1,15 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+// Lazy init — avoids module-load-time crash if env var isn't available
+let _client: Anthropic | null = null;
+function getClient() {
+  if (_client) return _client;
+  const key = process.env.ANTHROPIC_API_KEY;
+  if (!key) throw new Error('ANTHROPIC_API_KEY environment variable is not set');
+  _client = new Anthropic({ apiKey: key });
+  return _client;
+}
 
 const REPORT_SCHEMA = `{
   "address": "string - the full address as provided",
@@ -43,11 +51,14 @@ const REPORT_SCHEMA = `{
 
 export async function POST(req: NextRequest) {
   try {
-    const { address } = await req.json();
+    const body = await req.json().catch(() => ({}));
+    const { address } = body;
 
     if (!address?.trim()) {
       return NextResponse.json({ error: 'Address is required' }, { status: 400 });
     }
+
+    const client = getClient();
 
     const message = await client.messages.create({
       model: 'claude-sonnet-4-20250514',
@@ -75,9 +86,10 @@ Include realistic, plausible data based on your knowledge of the area. For shops
     return NextResponse.json(data);
   } catch (error: unknown) {
     console.error('Report generation error:', error);
-    const message = error instanceof Error ? error.message : 'Unknown error';
+    const msg = error instanceof Error ? error.message : String(error);
+    // Return specific error to help debug
     return NextResponse.json(
-      { error: `Failed to generate report: ${message}` },
+      { error: `Failed to generate report: ${msg}` },
       { status: 500 }
     );
   }

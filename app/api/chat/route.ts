@@ -1,7 +1,14 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest } from 'next/server';
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+let _client: Anthropic | null = null;
+function getClient() {
+  if (_client) return _client;
+  const key = process.env.ANTHROPIC_API_KEY;
+  if (!key) throw new Error("ANTHROPIC_API_KEY not set");
+  _client = new Anthropic({ apiKey: key });
+  return _client;
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,7 +23,7 @@ export async function POST(req: NextRequest) {
     const stream = new ReadableStream({
       async start(controller) {
         try {
-          const anthropicStream = client.messages.stream({
+          const anthropicStream = getClient().messages.stream({
             model: 'claude-sonnet-4-20250514',
             max_tokens: 1024,
             system: `You are a senior UK property professional and investment advisor. You have deep expertise in:
