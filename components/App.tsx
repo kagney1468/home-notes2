@@ -219,13 +219,13 @@ const App: React.FC = () => {
               <div className="absolute top-40 right-0 w-80 h-80 bg-indigo-200/20 blur-3xl rounded-full" />
             </div>
 
-            <div className="max-w-4xl mx-auto px-4 pt-14 pb-20 text-center">
+            <div className="max-w-4xl mx-auto px-4 pt-8 sm:pt-14 pb-12 sm:pb-20 text-center">
               <div className="inline-flex items-center gap-2 bg-white border border-slate-200 shadow-sm px-4 py-1.5 rounded-full text-xs font-bold text-slate-500 mb-10 tracking-widest uppercase">
                 <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
                 AI Powered UK Property Area Intelligence
               </div>
 
-              <div className="mb-12 relative bg-white border border-blue-100 rounded-[2rem] shadow-2xl shadow-blue-900/5 p-8 md:p-10 text-center overflow-hidden">
+              <div className="mb-8 sm:mb-12 relative bg-white border border-blue-100 rounded-[2rem] shadow-2xl shadow-blue-900/5 p-5 sm:p-8 md:p-10 text-center overflow-hidden">
                 <div className="absolute top-4 right-4 opacity-5"><Sparkles size={140} className="text-blue-600" /></div>
                 <div className="relative max-w-2xl mx-auto">
                   <div className="flex items-center justify-center gap-2 mb-5">
@@ -234,7 +234,7 @@ const App: React.FC = () => {
                       Welcome back, {currentUser.email?.split('@')[0]}
                     </span>
                   </div>
-                  <p className="text-xl md:text-2xl text-slate-800 leading-relaxed font-medium">
+                  <p className="text-base sm:text-xl md:text-2xl text-slate-800 leading-relaxed font-medium">
                     This app was created to allow anyone searching for a new place to live some insight into that place —{' '}
                     <span className="text-blue-600 font-bold">just as property professionals use.</span>{' '}
                     It doesn&apos;t matter whether you are looking to buy or rent. To keep your lists active or to share
@@ -243,11 +243,11 @@ const App: React.FC = () => {
                 </div>
               </div>
 
-              <h1 className="text-5xl md:text-6xl font-black text-slate-900 mb-5 leading-[1.1] tracking-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 mb-4 sm:mb-5 leading-[1.1] tracking-tight">
                 Searching for your next home?{' '}
                 <span className="text-blue-600">Get intelligent insight.</span>
               </h1>
-              <p className="text-lg md:text-xl text-slate-500 mb-10 max-w-2xl mx-auto leading-relaxed">
+              <p className="text-base sm:text-lg md:text-xl text-slate-500 mb-8 sm:mb-10 max-w-2xl mx-auto leading-relaxed">
                 The most comprehensive area reports for the UK — including side-by-side comparisons and deep AI analysis.
               </p>
 
@@ -257,10 +257,10 @@ const App: React.FC = () => {
                 </div>
                 <input type="text" value={address} onChange={(e) => setAddress(e.target.value)}
                   placeholder="Enter full address and postcode in UK …"
-                  className="w-full pl-14 pr-36 py-5 rounded-2xl border-2 border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none text-lg transition-all shadow-xl bg-white text-slate-900 placeholder:text-slate-400"
+                  className="w-full pl-10 sm:pl-14 pr-24 sm:pr-36 py-4 sm:py-5 rounded-2xl border-2 border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none text-lg transition-all shadow-xl bg-white text-slate-900 placeholder:text-slate-400"
                 />
                 <button type="submit"
-                  className="absolute right-3 top-2.5 bottom-2.5 bg-blue-600 text-white px-7 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg active:scale-95 text-base">
+                  className="absolute right-2 sm:right-3 top-2 sm:top-2.5 bottom-2 sm:bottom-2.5 bg-blue-600 text-white px-4 sm:px-7 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg active:scale-95 text-sm sm:text-base">
                   Analyse
                 </button>
               </form>
@@ -270,7 +270,7 @@ const App: React.FC = () => {
               </p>
 
               {/* Newsletter */}
-              <div className="max-w-xl mx-auto bg-white border border-slate-200 rounded-2xl p-6 shadow-sm mb-16">
+              <div className="max-w-xl mx-auto bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 shadow-sm mb-10 sm:mb-16">
                 <div className="flex items-center gap-2 mb-4 justify-center">
                   <Mail className="text-blue-600" size={18} />
                   <h3 className="font-bold text-slate-800">Receive our Newsletter if you wish</h3>
@@ -372,7 +372,7 @@ const App: React.FC = () => {
       {/* Footer */}
       <footer className="bg-slate-900 text-slate-400 py-12 mt-auto">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-start gap-8 border-b border-slate-800 pb-8 mb-8">
+          <div className="flex flex-col gap-8 border-b border-slate-800 pb-8 mb-8">
             <div className="max-w-md">
               <div className="flex items-center gap-2 mb-4">
                 <div className="bg-blue-600 p-1 rounded-lg"><Home className="text-white" size={15} /></div>

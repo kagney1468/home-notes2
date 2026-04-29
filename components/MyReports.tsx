@@ -58,8 +58,8 @@ export function MyReports({ userId, userEmail, onClose, onLoadReport }: Props) {
       <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={onClose} />
 
       {/* Panel */}
-      <div className="relative bg-white w-full sm:max-w-lg sm:rounded-3xl flex flex-col overflow-hidden shadow-2xl"
-           style={{ height: 'min(85vh, 600px)' }}>
+      <div className="relative bg-white w-full sm:max-w-lg sm:rounded-3xl mx-0 sm:mx-4 flex flex-col overflow-hidden shadow-2xl"
+           style={{ height: 'min(90vh, 600px)', maxHeight: '90dvh' }}>
 
         {/* Header */}
         <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-100 bg-gradient-to-r from-slate-800 to-slate-900">

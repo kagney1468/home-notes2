@@ -85,7 +85,7 @@ function TeaserCard({ report }: { report: TeaserReport }) {
         </div>
 
         {/* Key stats grid */}
-        <div className="p-4 grid grid-cols-2 gap-3">
+        <div className="p-3 sm:p-4 grid grid-cols-2 gap-2 sm:gap-3">
           <StatCard
             icon={<Wifi size={18} className="text-blue-600" />}
             label="Max Broadband"
@@ -273,7 +273,7 @@ export default function PublicLanding() {
       <main>
 
         {/* ── HERO ──────────────────────────────────────────────────────────── */}
-        <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-white pt-16 pb-20 px-4">
+        <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-white pt-10 sm:pt-16 pb-12 sm:pb-20 px-4">
           {/* Blobs */}
           <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
             <div className="absolute -top-32 -left-32 w-[500px] h-[500px] bg-blue-200/30 blur-3xl rounded-full" />
@@ -281,20 +281,20 @@ export default function PublicLanding() {
           </div>
 
           <div className="max-w-7xl mx-auto">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start lg:items-center">
 
               {/* Left — copy + search */}
               <div>
-                <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 px-4 py-1.5 rounded-full text-xs font-bold text-blue-700 mb-6 uppercase tracking-wider">
+                <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-xs font-bold text-blue-700 mb-5 sm:mb-6 uppercase tracking-wider">
                   <Sparkles size={12} /> AI-Powered · Free · Instant
                 </div>
 
-                <h1 className="text-5xl md:text-6xl font-black text-slate-900 leading-[1.05] tracking-tight mb-6">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 leading-[1.1] tracking-tight mb-5">
                   Know your area{' '}
                   <span className="text-blue-600">before you move.</span>
                 </h1>
 
-                <p className="text-xl text-slate-500 leading-relaxed mb-8 max-w-lg">
+                <p className="text-base sm:text-lg text-slate-500 leading-relaxed mb-6 max-w-lg">
                   Enter any UK address and get an instant AI report on broadband, schools,
                   crime, flood risk, transport and more — <strong className="text-slate-700">completely free.</strong>
                 </p>
@@ -309,7 +309,7 @@ export default function PublicLanding() {
                     'Side-by-side property comparisons',
                     'Deep AI investment analysis',
                   ].map(b => (
-                    <li key={b} className="flex items-center gap-2.5 text-sm text-slate-600 font-medium">
+                    <li key={b} className="flex items-center gap-2 text-sm text-slate-600 font-medium">
                       <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />
                       {b}
                     </li>
@@ -317,7 +317,7 @@ export default function PublicLanding() {
                 </ul>
 
                 {/* Search bar */}
-                <form onSubmit={handleTeaserSearch} className="relative group max-w-xl">
+                <form onSubmit={handleTeaserSearch} className="relative group max-w-xl w-full">
                   <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
                     <Search size={20} />
                   </div>
@@ -326,13 +326,13 @@ export default function PublicLanding() {
                     value={address}
                     onChange={e => setAddress(e.target.value)}
                     placeholder="Enter a UK address and postcode…"
-                    className="w-full pl-13 pr-36 py-4 rounded-2xl border-2 border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none text-base transition-all shadow-xl bg-white placeholder:text-slate-400"
+                    className="w-full pl-10 pr-24 sm:pl-13 sm:pr-36 py-3.5 sm:py-4 rounded-2xl border-2 border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none text-base transition-all shadow-xl bg-white placeholder:text-slate-400"
                     style={{ paddingLeft: '3rem' }}
                   />
                   <button
                     type="submit"
                     disabled={teaserLoading}
-                    className="absolute right-2 top-2 bottom-2 bg-blue-600 text-white px-6 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-md active:scale-95 disabled:opacity-60 flex items-center gap-2 text-sm"
+                    className="absolute right-2 top-2 bottom-2 bg-blue-600 text-white px-3 sm:px-6 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-md active:scale-95 disabled:opacity-60 flex items-center gap-2 text-sm"
                   >
                     {teaserLoading ? <Loader2 size={16} className="animate-spin" /> : null}
                     {teaserLoading ? 'Analysing…' : 'Analyse'}
@@ -409,7 +409,7 @@ export default function PublicLanding() {
         </section>
 
         {/* ── HSR CTA STRIP ─────────────────────────────────────────────────── */}
-        <section className="bg-gradient-to-r from-blue-950 to-slate-900 py-12 px-4">
+        <section className="bg-gradient-to-r from-blue-950 to-slate-900 py-8 sm:py-12 px-4">
           <div className="max-w-5xl mx-auto">
             <div className="flex flex-col md:flex-row items-center justify-between gap-8">
               <div className="text-center md:text-left">
@@ -424,7 +424,7 @@ export default function PublicLanding() {
                   Our experts are on hand to help you act on what you&apos;ve discovered.
                 </p>
               </div>
-              <div className="flex flex-col sm:flex-row gap-3 shrink-0">
+              <div className="flex flex-col xs:flex-row gap-3 w-full sm:w-auto shrink-0">
                 <a
                   href="https://homesalesready.com"
                   target="_blank"
@@ -451,7 +451,7 @@ export default function PublicLanding() {
           <div className="max-w-5xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-3">How it works</h2>
             <p className="text-slate-500 mb-12 max-w-xl mx-auto">Three steps to knowing everything about your next neighbourhood</p>
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
               {[
                 { step: '01', icon: <Search size={24} />, title: 'Enter any UK address', desc: 'Just type the full address and postcode of any property you\'re interested in.' },
                 { step: '02', icon: <Sparkles size={24} />, title: 'Get your instant report', desc: 'Our AI analyses broadband, schools, crime, flood risk, transport and more in seconds.' },
@@ -473,7 +473,7 @@ export default function PublicLanding() {
         {/* ── SOCIAL PROOF ──────────────────────────────────────────────────── */}
         <section className="py-16 px-4 bg-slate-50">
           <div className="max-w-5xl mx-auto">
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
               {[
                 { stat: '2,500+', label: 'Users getting AI property insights', icon: <Users size={20} /> },
                 { stat: '16 cities', label: 'Coverage across England', icon: <MapPin size={20} /> },

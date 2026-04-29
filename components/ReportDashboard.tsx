@@ -36,11 +36,11 @@ const ofstedColor = (rating: string) => {
 function Section({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-      <div className="flex items-center gap-2.5 px-5 py-4 border-b border-slate-50">
+      <div className="flex flex-wrap items-center gap-2 px-4 py-3 border-b border-slate-50">
         <div className="text-blue-600">{icon}</div>
         <h3 className="font-bold text-slate-900 text-sm uppercase tracking-wider">{title}</h3>
       </div>
-      <div className="p-5">{children}</div>
+      <div className="p-4">{children}</div>
     </div>
   );
 }
@@ -56,7 +56,7 @@ function ReportColumn({ report }: { report: PropertyReport }) {
 
       {/* Broadband */}
       <Section icon={<Wifi size={18} />} title="Broadband">
-        <div className="grid grid-cols-2 gap-3 mb-3">
+        <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-3">
           {[
             { label: 'Max Download', value: report.broadband.maxSpeed },
             { label: 'Max Upload', value: report.broadband.uploadSpeed },
@@ -225,23 +225,23 @@ export function ReportDashboard({ report, secondReport, onNewSearch, onCompare, 
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="max-w-7xl mx-auto px-3 sm:px-4 py-5 sm:py-8">
       {/* Top bar */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+      <div className="flex flex-col gap-3 mb-6 sm:mb-8">
         <div>
-          <button onClick={onNewSearch} className="flex items-center gap-1.5 text-sm font-bold text-slate-500 hover:text-slate-900 mb-2 transition-colors">
+          <button onClick={onNewSearch} className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-slate-500 hover:text-slate-900 mb-1.5 transition-colors">
             <ArrowLeft size={16} /> New Search
           </button>
-          <h2 className="text-2xl font-black text-slate-900">{report.address}</h2>
+          <h2 className="text-xl sm:text-2xl font-black text-slate-900">{report.address}</h2>
           <p className="text-slate-500 text-sm">{report.postcode}</p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Deep Analysis button */}
           {!analysisStarted && (
             <button
               onClick={runDeepAnalysis}
-              className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-indigo-700 transition-colors"
+              className="flex items-center gap-2 bg-indigo-600 text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-sm font-bold hover:bg-indigo-700 transition-colors"
             >
               <Sparkles size={16} />
               Deep Analysis
@@ -252,7 +252,7 @@ export function ReportDashboard({ report, secondReport, onNewSearch, onCompare, 
           {!secondReport && (
             <button
               onClick={() => setShowCompareInput((v) => !v)}
-              className="flex items-center gap-2 bg-slate-900 text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-800 transition-colors"
+              className="flex items-center gap-2 bg-slate-900 text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-sm font-bold hover:bg-slate-800 transition-colors"
             >
               <GitCompare size={16} />
               Compare
@@ -263,7 +263,7 @@ export function ReportDashboard({ report, secondReport, onNewSearch, onCompare, 
 
       {/* Compare input */}
       {showCompareInput && !secondReport && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 mb-6 shadow-sm">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 mb-5 shadow-sm">
           <p className="text-sm font-bold text-slate-700 mb-3">Enter address to compare</p>
           <form
             onSubmit={(e) => {
@@ -285,7 +285,7 @@ export function ReportDashboard({ report, secondReport, onNewSearch, onCompare, 
             <button
               type="submit"
               disabled={isComparing || !compareAddress.trim()}
-              className="bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-60"
+              className="bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-700 transition-colors flex flex-wrap items-center gap-2 disabled:opacity-60"
             >
               {isComparing ? <Loader2 size={14} className="animate-spin" /> : <ChevronRight size={16} />}
               {isComparing ? 'Loading…' : 'Compare'}
@@ -297,7 +297,7 @@ export function ReportDashboard({ report, secondReport, onNewSearch, onCompare, 
       {/* Deep Analysis panel */}
       {analysisStarted && (
         <div className="bg-white border border-indigo-100 rounded-2xl p-6 mb-6 shadow-sm">
-          <div className="flex items-center gap-2 mb-4">
+          <div className="flex flex-wrap items-center gap-2 mb-4">
             <Sparkles size={18} className="text-indigo-600" />
             <h3 className="font-bold text-slate-900">Professional Deep Analysis</h3>
             {analysisLoading && <Loader2 size={14} className="animate-spin text-indigo-500 ml-auto" />}
@@ -317,7 +317,7 @@ export function ReportDashboard({ report, secondReport, onNewSearch, onCompare, 
 
       {/* Report columns */}
       {secondReport ? (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6">
           <div>
             <div className="bg-blue-600 text-white text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-t-xl inline-block">
               Property A

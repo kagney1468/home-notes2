@@ -76,7 +76,7 @@ export function AuthScreen({ onBack }: { onBack?: () => void }) {
   if (verificationSent) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 px-4">
-        <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-10 max-w-md w-full text-center">
+        <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-6 sm:p-10 max-w-md w-full text-center">
           <div className="bg-emerald-50 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
             <CheckCircle2 className="text-emerald-600" size={32} />
           </div>
@@ -97,7 +97,7 @@ export function AuthScreen({ onBack }: { onBack?: () => void }) {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 px-4">
-      <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-8 max-w-md w-full">
+      <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-5 sm:p-8 max-w-md w-full">
 
         {/* Back button */}
         {onBack && (

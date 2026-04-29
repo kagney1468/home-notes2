@@ -90,8 +90,8 @@ export function ProfessionalInsightsAgent({ onClose }: Props) {
       <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={onClose} />
 
       {/* Panel */}
-      <div className="relative bg-white w-full sm:max-w-lg sm:rounded-3xl flex flex-col overflow-hidden shadow-2xl"
-           style={{ height: 'min(90vh, 680px)' }}>
+      <div className="relative bg-white w-full sm:max-w-lg sm:rounded-3xl mx-0 sm:mx-4 flex flex-col overflow-hidden shadow-2xl"
+           style={{ height: 'min(92vh, 680px)', maxHeight: '92dvh' }}>
         {/* Header */}
         <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-100 bg-gradient-to-r from-blue-600 to-indigo-600">
           <div className="bg-white/20 p-2 rounded-xl">
