@@ -5,6 +5,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendEmailVerification,
+  sendPasswordResetEmail,
 } from 'firebase/auth';
 import { auth } from '../services/firebase';
 import { Home, Mail, Lock, Eye, EyeOff, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
@@ -19,8 +20,32 @@ export function AuthScreen({ onBack }: { onBack?: () => void } = {}) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [verificationSent, setVerificationSent] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
 
   const clearError = () => setError(null);
+
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      setError('Please enter your email address above first.');
+      return;
+    }
+    setResetLoading(true);
+    clearError();
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setResetSent(true);
+    } catch (err: unknown) {
+      const code = (err as { code?: string }).code;
+      if (code === 'auth/user-not-found') {
+        setError('No account found with that email address.');
+      } else {
+        setError('Could not send reset email. Please try again.');
+      }
+    } finally {
+      setResetLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -163,6 +188,23 @@ export function AuthScreen({ onBack }: { onBack?: () => void } = {}) {
               </button>
             </div>
           </div>
+
+          {mode === 'signin' && (
+            <div className="flex justify-end -mt-2">
+              {resetSent ? (
+                <span className="text-xs text-emerald-600 font-medium">✓ Reset email sent — check your inbox</span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  disabled={resetLoading}
+                  className="text-xs text-blue-600 hover:underline font-medium disabled:opacity-50"
+                >
+                  {resetLoading ? 'Sending…' : 'Forgot password?'}
+                </button>
+              )}
+            </div>
+          )}
 
           <button
             type="submit"
