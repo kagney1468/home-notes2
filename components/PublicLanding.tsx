@@ -515,6 +515,7 @@ export default function PublicLanding() {
             <button onClick={() => setShowAuth(true)} className="hover:text-white transition-colors">Sign In</button>
             <a href="/privacy" className="hover:text-white transition-colors">Privacy Policy</a>
             <a href="/terms" className="hover:text-white transition-colors">Terms of Service</a>
+            <a href="/cookies" className="hover:text-white transition-colors">Cookie Policy</a>
           </div>
           <p className="text-[10px] text-slate-600 text-center">
             © 2026 Kadima Systems Ltd · Reports are AI-generated. Verify independently.

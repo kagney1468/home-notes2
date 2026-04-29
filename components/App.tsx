@@ -457,6 +457,7 @@ const App: React.FC = () => {
                 <button onClick={() => setShowDisclaimer(true)} className="hover:text-white text-left">AI Disclaimer</button>
                 <a href="/privacy" className="hover:text-white">Privacy Policy</a>
                 <a href="/terms" className="hover:text-white">Terms of Service</a>
+                <a href="/cookies" className="hover:text-white">Cookie Policy</a>
               </div>
               <div className="flex flex-col gap-2">
                 <h4 className="text-white text-xs font-bold uppercase mb-2">Coverage</h4>
