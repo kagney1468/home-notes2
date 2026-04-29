@@ -1,16 +1,38 @@
 import { NextResponse } from 'next/server';
+import Anthropic from '@anthropic-ai/sdk';
 
-// Temporary diagnostic endpoint — DELETE after issue resolved
 export async function GET() {
   const key = process.env.ANTHROPIC_API_KEY;
-  return NextResponse.json({
-    hasKey: !!key,
-    keyLength: key?.length ?? 0,
-    keyPreview: key ? key.slice(0, 12) + '...' + key.slice(-6) : null,
-    startsCorrectly: key?.startsWith('sk-ant-') ?? false,
-    hasWhitespace: key ? /[\s\n\r]/.test(key) : false,
-    nodeEnv: process.env.NODE_ENV,
-    supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ? 'set' : 'missing',
-    supabaseServiceKey: process.env.SUPABASE_SERVICE_ROLE_KEY ? 'set' : 'missing',
-  });
+  const result: Record<string, unknown> = {
+    key_present: !!key,
+    key_length: key?.length,
+    key_prefix: key?.slice(0, 14),
+    node_version: process.version,
+    env: process.env.NODE_ENV,
+  };
+
+  if (!key) {
+    return NextResponse.json({ ...result, error: 'NO KEY' });
+  }
+
+  try {
+    const client = new Anthropic({ apiKey: key });
+    const msg = await client.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 10,
+      messages: [{ role: 'user', content: 'Reply with: OK' }],
+    });
+    result.api_test = 'PASS';
+    result.api_response = msg.content[0].type === 'text' ? msg.content[0].text : 'non-text';
+    result.model = msg.model;
+  } catch (err: unknown) {
+    result.api_test = 'FAIL';
+    result.error = err instanceof Error ? err.message : String(err);
+    result.error_type = (err as { constructor: { name: string } })?.constructor?.name;
+    if ((err as { status?: number })?.status) {
+      result.http_status = (err as { status: number }).status;
+    }
+  }
+
+  return NextResponse.json(result);
 }
