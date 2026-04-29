@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     type: 'website',
     title: 'Home Notes - Intelligent Property Area Reports',
     description:
-      'AI-assisted insights for homebuyers and renters in England. Know your area before you move.',
+      'AI-assisted insights for homebuyers and renters in England. Know your neighbourhood before you move home.',
     images: [
       'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1000&auto=format&fit=crop',
     ],

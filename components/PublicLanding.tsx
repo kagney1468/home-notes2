@@ -290,8 +290,8 @@ export default function PublicLanding() {
                 </div>
 
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 leading-[1.1] tracking-tight mb-5">
-                  Know your area{' '}
-                  <span className="text-blue-600">before you move.</span>
+                  Know your neighbourhood{' '}
+                  <span className="text-blue-600">before you move home.</span>
                 </h1>
 
                 <p className="text-base sm:text-lg text-slate-500 leading-relaxed mb-6 max-w-lg">
@@ -495,7 +495,7 @@ export default function PublicLanding() {
         <section className="py-20 px-4 bg-white">
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-4">
-              Ready to know your area?
+              Ready to know your neighbourhood?
             </h2>
             <p className="text-slate-500 mb-8 text-lg">
               Join thousands of buyers and renters who use Home Notes to make smarter property decisions.
