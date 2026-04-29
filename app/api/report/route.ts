@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
     const client = getClient();
 
     const message = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-5',
       max_tokens: 4096,
       system: `You are a UK property intelligence expert. When given an address, produce a detailed area report based on your knowledge of the UK. Return ONLY valid JSON matching the schema exactly. Do not include markdown fences or any text outside the JSON object.`,
       messages: [

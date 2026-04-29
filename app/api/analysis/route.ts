@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
       async start(controller) {
         try {
           const anthropicStream = getClient().messages.stream({
-            model: 'claude-sonnet-4-20250514',
+            model: 'claude-sonnet-4-5',
             max_tokens: 2048,
             system: `You are a senior UK property analyst and investment advisor. Provide professional, insightful analysis written in Markdown.`,
             messages: [
