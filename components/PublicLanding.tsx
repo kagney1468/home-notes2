@@ -151,7 +151,12 @@ function TeaserCard({ report }: { report: TeaserReport }) {
               <p className="font-black text-slate-900 text-sm mb-1">Full report locked</p>
               <p className="text-xs text-slate-500 mb-3">Transport, healthcare, schools, gyms + deep AI analysis</p>
               <button
-                onClick={() => window.dispatchEvent(new CustomEvent('show-auth'))}
+                onClick={() => {
+                  if (typeof window !== 'undefined' && (window as Window & { _teaserAddress?: string })._teaserAddress) {
+                    sessionStorage.setItem('homenotes_pending_address', (window as Window & { _teaserAddress?: string })._teaserAddress!);
+                  }
+                  window.dispatchEvent(new CustomEvent('show-auth'));
+                }}
                 className="w-full bg-blue-600 text-white py-2.5 rounded-xl font-bold text-sm hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
               >
                 Sign up free — unlock full report <ArrowRight size={14} />
@@ -207,6 +212,7 @@ export default function PublicLanding() {
         return;
       }
       setTeaserReport(data);
+      if (typeof window !== 'undefined') (window as Window & { _teaserAddress?: string })._teaserAddress = address;
     } catch (err: unknown) {
       setTeaserError('Network error: ' + (err instanceof Error ? err.message : String(err)));
     } finally {
@@ -255,7 +261,7 @@ export default function PublicLanding() {
               Sign In
             </button>
             <button
-              onClick={() => setShowAuth(true)}
+              onClick={() => { if (address.trim()) sessionStorage.setItem('homenotes_pending_address', address); setShowAuth(true); }}
               className="bg-blue-600 text-white text-sm font-bold px-4 py-2 rounded-xl hover:bg-blue-700 transition-colors flex items-center gap-1.5"
             >
               Get Started <ChevronRight size={14} />

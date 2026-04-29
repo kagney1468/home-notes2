@@ -33,17 +33,39 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const supabase = getSupabaseClient();
-    // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setCurrentUser(session?.user ?? null);
       setAuthChecking(false);
     });
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setCurrentUser(session?.user ?? null);
     });
     return () => subscription.unsubscribe();
   }, []);
+
+  // Auto-populate and search with address saved before sign-up
+  useEffect(() => {
+    if (!currentUser || authChecking) return;
+    const pending = sessionStorage.getItem('homenotes_pending_address');
+    if (pending) {
+      sessionStorage.removeItem('homenotes_pending_address');
+      setAddress(pending);
+      // Small delay so the UI has rendered before triggering
+      setTimeout(() => {
+        setStatus(AppState.LOADING);
+        setError(null);
+        fetchPropertyReport(pending).then(data => {
+          setReport(data);
+          setSecondReport(null);
+          setStatus(AppState.REPORT);
+          saveReport(data, currentUser.id, currentUser.email!);
+        }).catch(err => {
+          setError((err as Error).message || 'An unexpected error occurred.');
+          setStatus(AppState.ERROR);
+        });
+      }, 300);
+    }
+  }, [currentUser, authChecking]);
 
   const saveReport = async (rep: PropertyReport, userId: string, userEmail: string) => {
     try {
